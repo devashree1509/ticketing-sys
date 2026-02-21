@@ -1,9 +1,12 @@
 import React ,{useState} from "react";
+import  {useNavigate} from "react-router-dom";
 
- function Login(){
+function Login(){
 
+    const navigate=useNavigate();
      const [email,setEmail]=useState("");
      const [password,setPassword]=useState("");
+
 
      const handleLogin = async () =>{
          try{
@@ -11,10 +14,15 @@ import React ,{useState} from "react";
 
              const data = await response.text();
 
-             alert("BAckend response:"+data);
+             alert("Backend response:"+data);
+
+             navigate("/dashboard");
+             console.log("Navigation happens");
 
              console.log("Email:", email);
              console.log("Password:", password);
+
+
 
          } catch (e) {
              console.error(e);

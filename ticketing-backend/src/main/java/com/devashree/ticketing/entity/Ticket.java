@@ -1,9 +1,15 @@
 package com.devashree.ticketing.entity;
  import jakarta.persistence.*;
+ import lombok.*;
 
-
- @Entity
+@Entity
+ @Getter
+ @Setter
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @Builder
  @Table(name="tickets")
+
 public class Ticket {
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,34 +18,14 @@ public class Ticket {
      private  String title;
      private  String description;
      private  String status;
+     private String priority;
 
-     public Ticket(){}
+     @ManyToOne //MANY tickets can created by ONE User
+     @JoinColumn(name="created_by")
+     private User createdBy;
 
-     public long getid(){
-         return id;
-     }
-
-     public String getTitle(){
-         return title;
-     }
-
-     public void setTitle(){
-         this.title=title;
-     }
-
-     public String getDescription(){
-         return description;
-     }
-
-     public void setDescription(){
-         this.description=description;
-     }
-
-     public String getStatus(){
-         return status;
-     }
-
-     public void setStatus(){
-         this.status=status;
-     }
+     @ManyToOne // MANY tickets can assigned to ONE User
+    @JoinColumn(name = "assigned_to")
+    private User assignedTo;
 }
+
