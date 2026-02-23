@@ -1,7 +1,8 @@
 package com.devashree.ticketing.controller;
 
-import com.devashree.ticketing.entity.Ticket;
-import com.devashree.ticketing.repository.TicketRepository;
+import com.devashree.ticketing.dto.CreateTicketRequest;
+import com.devashree.ticketing.dto.TicketResponse;
+import com.devashree.ticketing.service.TicketService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +11,22 @@ import java.util.List;
 @RequestMapping("/api/tickets")
 
 public class TicketController {
+    private final TicketService ticketService;
 
-    private final TicketRepository ticketRepository;
-
-    public TicketController(TicketRepository ticketRepository){
-        this.ticketRepository=ticketRepository;
+    public TicketController(TicketService ticketService){
+        this.ticketService=ticketService;
     }
 
     @PostMapping
-    public Ticket createTicket(@RequestBody Ticket ticket){
-        return ticketRepository.save(ticket);
+    public TicketResponse createTicket(@RequestBody CreateTicketRequest request){
+        return ticketService.createTicket(request);
     }
 
     @GetMapping
-    public List<Ticket> getAllTickets(){
-        return ticketRepository.findAll();
+    public TicketResponse getTicket(@PathVariable Long id){
+        return ticketService.getTicket(id);
     }
+
+
+
 }
