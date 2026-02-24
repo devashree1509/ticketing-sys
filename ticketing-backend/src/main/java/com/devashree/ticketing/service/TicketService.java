@@ -1,11 +1,14 @@
 package com.devashree.ticketing.service;
 import com.devashree.ticketing.dto.CreateTicketRequest;
 import com.devashree.ticketing.dto.TicketResponse;
+import com.devashree.ticketing.dto.UpdateTicketRequest;
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.entity.User;
 import com.devashree.ticketing.repository.TicketRepository;
 import com.devashree.ticketing.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TicketService {
@@ -16,6 +19,10 @@ public class TicketService {
     public TicketService(TicketRepository ticketRepository,UserRepository userRepository){
         this.ticketRepository=ticketRepository;
         this.userRepository=userRepository;
+    }
+
+    public List<Ticket> getAllTickets(){
+        return ticketRepository.findAll();
     }
 
     public TicketResponse createTicket(CreateTicketRequest request){
@@ -43,7 +50,7 @@ public class TicketService {
         );
     }
 
-    public TicketResponse getTicket(Long id){
+    public TicketResponse getTicketById(Long id){
 
         Ticket ticket = ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
         return new TicketResponse(
@@ -56,4 +63,20 @@ public class TicketService {
         );
     }
 
+    public Ticket updateTicket(Long id, UpdateTicketRequest request){
+        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
+
+        ticket.setTitle(request.getTitle());
+        ticket.setDescription(request.getDescription());
+        ticket.setCategory(request.getCategory());
+        ticket.setPriority(request.getPriority());
+
+        return ticketRepository.save(ticket);
+    }
+
+   public void deleteTicket(Long id){
+        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
+
+        ticketRepository.delete(ticket);
+   }
 }

@@ -18,6 +18,7 @@ public class Ticket {
      private  String title;
      private  String description;
      private  String status;
+     private String category;
      private String priority;
 
      @ManyToOne //MANY tickets can created by ONE User
@@ -27,5 +28,15 @@ public class Ticket {
      @ManyToOne // MANY tickets can assigned to ONE User
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+
 }
 
