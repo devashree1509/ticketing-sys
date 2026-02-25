@@ -46,7 +46,7 @@ public class TicketController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTicket(@PathVariable Long id){
         ticketService.deleteTicket(id);
-        return ResponseEntity.ok("Ticket deleted suucessfullyy");
+        return ResponseEntity.ok("Ticket deleted successfullyy");
     }
 
 
