@@ -7,6 +7,10 @@ import com.devashree.ticketing.entity.User;
 import com.devashree.ticketing.repository.TicketRepository;
 import com.devashree.ticketing.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -78,5 +82,10 @@ public class TicketService {
         Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
 
         ticketRepository.delete(ticket);
+   }
+   public Page<Ticket> getAllTickets(int page,int size){
+        Pageable pageable=PageRequest.of(page,size,Sort.by("createdBy").descending());
+
+        return ticketRepository.findAll(pageable);
    }
 }

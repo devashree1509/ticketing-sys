@@ -1,6 +1,7 @@
 package com.devashree.ticketing.entity;
  import jakarta.persistence.*;
  import lombok.*;
+ import java.time.LocalDateTime;
 
 @Entity
  @Getter
@@ -20,6 +21,14 @@ public class Ticket {
      private  String status;
      private String category;
      private String priority;
+
+     @Column(name="created_at")
+     private LocalDateTime createdAt;
+
+     @PrePersist
+     protected void onCreate(){
+         this.createdAt=LocalDateTime.now();
+     }
 
      @ManyToOne //MANY tickets can created by ONE User
      @JoinColumn(name="created_by")

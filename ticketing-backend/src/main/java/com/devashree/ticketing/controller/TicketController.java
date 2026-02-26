@@ -8,6 +8,8 @@ import com.devashree.ticketing.service.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -27,9 +29,13 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllTickets(){
-        return ResponseEntity.ok(ticketService.getAllTickets());
+    public Page<Ticket> getAllTickets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ticketService.getAllTickets(page,size);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getTicketById(@PathVariable Long id){
         return ResponseEntity.ok(ticketService.getTicketById(id));
