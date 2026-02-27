@@ -4,6 +4,7 @@ import com.devashree.ticketing.dto.TicketResponse;
 import com.devashree.ticketing.dto.UpdateTicketRequest;
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.entity.User;
+import com.devashree.ticketing.exception.NotFoundException;
 import com.devashree.ticketing.repository.TicketRepository;
 import com.devashree.ticketing.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class TicketService {
 
     public TicketResponse getTicketById(Long id){
 
-        Ticket ticket = ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(()->new NotFoundException("Ticket not found with id:"+id));
         return new TicketResponse(
                 ticket.getId(),
                 ticket.getTitle(),
