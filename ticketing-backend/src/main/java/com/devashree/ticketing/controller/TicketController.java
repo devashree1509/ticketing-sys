@@ -40,6 +40,20 @@ public class TicketController {
     public ResponseEntity<?> getTicketById(@PathVariable Long id){
         return ResponseEntity.ok(ticketService.getTicketById(id));
     }
+    @GetMapping("/status/{status}")
+    public List<Ticket> filterByStatus(@PathVariable String status){
+        return ticketService.getByStatus(status);
+    }
+
+    @GetMapping("/priority/{priority}")
+    public List<Ticket> filterByPriority(@PathVariable String priority){
+        return ticketService.getByPriority(priority);
+    }
+
+    @GetMapping("/search")
+    public List<Ticket> search(@RequestBody String keyword){
+        return ticketService.searchByTitle(keyword);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTicket(

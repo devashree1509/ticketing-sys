@@ -68,6 +68,18 @@ public class TicketService {
         );
     }
 
+    public List<Ticket> getByStatus(String status){
+        return ticketRepository.findByStatus(status);
+    }
+
+    public List<Ticket> getByPriority(String priority){
+        return ticketRepository.findByPriority(priority);
+    }
+
+    public List<Ticket> searchByTitle(String keyword){
+        return ticketRepository.findByTitleContainingIgnoreCase(keyword);
+    }
+
     public Ticket updateTicket(Long id, UpdateTicketRequest request){
         Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
 
@@ -89,4 +101,5 @@ public class TicketService {
 
         return ticketRepository.findAll(pageable);
    }
+
 }
