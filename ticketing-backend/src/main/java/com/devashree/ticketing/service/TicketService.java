@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -31,8 +32,8 @@ public class TicketService {
     }
 
     public TicketResponse createTicket(CreateTicketRequest request){
-        User createdBy = userRepository.findById(request.getCreatedBy()).orElseThrow(()->new RuntimeException("Created by user not found"));
-        User assignedTo = userRepository.findById(request.getAssignedTo()).orElseThrow(()->new RuntimeException("Assigned user not found"));
+        User createdBy = userRepository.findById(request.getCreatedBy()).orElseThrow(()->new NotFoundException("Created by user not found"));
+        User assignedTo = userRepository.findById(request.getAssignedTo()).orElseThrow(()->new NotFoundException("Assigned user not found"));
 
         Ticket ticket=new Ticket();
 
@@ -68,20 +69,8 @@ public class TicketService {
         );
     }
 
-    public List<Ticket> getByStatus(String status){
-        return ticketRepository.findByStatus(status);
-    }
-
-    public List<Ticket> getByPriority(String priority){
-        return ticketRepository.findByPriority(priority);
-    }
-
-    public List<Ticket> searchByTitle(String keyword){
-        return ticketRepository.findByTitleContainingIgnoreCase(keyword);
-    }
-
     public Ticket updateTicket(Long id, UpdateTicketRequest request){
-        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
+        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new NotFoundException("Ticket not found"));
 
         ticket.setTitle(request.getTitle());
         ticket.setDescription(request.getDescription());
@@ -92,7 +81,7 @@ public class TicketService {
     }
 
    public void deleteTicket(Long id){
-        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket not found"));
+        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new NotFoundException("Ticket not found"));
 
         ticketRepository.delete(ticket);
    }
@@ -101,5 +90,34 @@ public class TicketService {
 
         return ticketRepository.findAll(pageable);
    }
+
+   public Page<TicketResponse> getTickets(
+           int page,
+           int size,
+           String status,
+           String priority,
+           String search
+   ){
+        Pageable pageable=PageRequest.of(page,size,Sort.by("id").descending());
+
+        Page<Ticket> ticketPage=ticketRepository.findAll(pageable);
+
+        List<TicketResponse> filtered= ticketPage.getContent().stream()
+                .filter(t -> status == null || t.getStatus().equalsIgnoreCase(status))
+                .filter((t-> priority == null || t.getPriority().equalsIgnoreCase(priority)))
+                .filter(t-> search == null || t.getTitle().toLowerCase().contains(search.toLowerCase()))
+                .map(t ->new TicketResponse(
+                        t.getId(),
+                        t.getTitle(),
+                        t.getDescription(),
+                        t.getStatus(),
+                        t.getCreatedBy().getName(),
+                        t.getAssignedTo().getName()
+                ))
+                .toList();
+        return new PageImpl<>(filtered,pageable, filtered.size());
+
+
+    }
 
 }

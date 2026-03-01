@@ -5,6 +5,7 @@ import com.devashree.ticketing.dto.TicketResponse;
 import com.devashree.ticketing.dto.UpdateTicketRequest;
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.service.TicketService;
+import com.devashree.ticketing.util.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,35 +25,28 @@ public class TicketController {
     }
 
     @PostMapping
-    public TicketResponse createTicket(@RequestBody CreateTicketRequest request){
-        return ticketService.createTicket(request);
+    public ResponseEntity<ApiResponse<?>> createTicket(@RequestBody CreateTicketRequest request){
+        TicketResponse response = ticketService.createTicket(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Ticket created successfullyy",response));
     }
 
     @GetMapping
-    public Page<Ticket> getAllTickets(
+    public ResponseEntity<ApiResponse<?>>getTickets(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) String search
     ){
-        return ticketService.getAllTickets(page,size);
+      Page<TicketResponse> tickets=ticketService.getTickets(page, size, status,priority,search);
+        return ResponseEntity.ok(ApiResponse.success("Ticket fetched successfully",tickets));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTicketById(@PathVariable Long id){
-        return ResponseEntity.ok(ticketService.getTicketById(id));
-    }
-    @GetMapping("/status/{status}")
-    public List<Ticket> filterByStatus(@PathVariable String status){
-        return ticketService.getByStatus(status);
-    }
-
-    @GetMapping("/priority/{priority}")
-    public List<Ticket> filterByPriority(@PathVariable String priority){
-        return ticketService.getByPriority(priority);
-    }
-
-    @GetMapping("/search")
-    public List<Ticket> search(@RequestBody String keyword){
-        return ticketService.searchByTitle(keyword);
+    public ResponseEntity<ApiResponse<?>> getTicketById(@PathVariable Long id){
+       TicketResponse response = ticketService.getTicketById(id);
+       return ResponseEntity.ok(ApiResponse.success("Ticket fetched successfully",response));
     }
 
     @PutMapping("/{id}")
@@ -66,7 +60,7 @@ public class TicketController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTicket(@PathVariable Long id){
         ticketService.deleteTicket(id);
-        return ResponseEntity.ok("Ticket deleted successfullyy");
+       return ResponseEntity.ok(ApiResponse.success("Ticket deleted Successfully",null));
     }
 
 

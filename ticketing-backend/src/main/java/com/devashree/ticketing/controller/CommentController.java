@@ -24,7 +24,7 @@ public class CommentController {
             @PathVariable Long ticketId,
             @RequestBody CreateCommentRequest request) {
 
-        Long currentUserId = 1L; // TEMP (later from JWT)
+        Long currentUserId = 1L;
 
         return commentService.addComment(ticketId, request, currentUserId);
     }
