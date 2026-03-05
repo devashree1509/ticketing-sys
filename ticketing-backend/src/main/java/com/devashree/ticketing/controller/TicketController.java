@@ -8,6 +8,7 @@ import com.devashree.ticketing.service.TicketService;
 import com.devashree.ticketing.util.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,11 +25,18 @@ public class TicketController {
         this.ticketService=ticketService;
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createTicket(@RequestBody CreateTicketRequest request){
         TicketResponse response = ticketService.createTicket(request);
         return ResponseEntity.ok(
                 ApiResponse.success("Ticket created successfullyy",response));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/test")
+    public String adminTest(){
+        return "Admin access Granted";
     }
 
     @GetMapping

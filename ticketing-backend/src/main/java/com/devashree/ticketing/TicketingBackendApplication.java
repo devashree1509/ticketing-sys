@@ -10,6 +10,6 @@ public class TicketingBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TicketingBackendApplication.class, args);
 		BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
-		System.out.println(encoder.encode("admin123"));
+		System.out.println(encoder.encode("pass123"));
 	}
 }

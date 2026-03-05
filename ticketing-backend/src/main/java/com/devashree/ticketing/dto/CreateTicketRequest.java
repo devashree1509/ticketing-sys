@@ -13,13 +13,15 @@ public class CreateTicketRequest {
     @Size(min=5,max=100)
     private String description;
 
-    @NotBlank(message = "CreatedBy is required")
+
     private Long createdBy;
 
     private Long assignedTo;
 
     @NotBlank(message = "Category is required")
     private String category;
+
+    private String priority;
 
     public CreateTicketRequest() {
     }
@@ -51,7 +53,7 @@ public class CreateTicketRequest {
         return assignedTo;
     }
 
-    public void setAssignedTo(){
+    public void setAssignedTo(Long assignedTo){
         this.assignedTo=assignedTo;
     }
 
@@ -62,4 +64,12 @@ public class CreateTicketRequest {
     public void setCategory(String category) {
         this.category = category;
     }
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
 }

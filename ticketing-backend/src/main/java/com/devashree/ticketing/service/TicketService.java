@@ -33,16 +33,16 @@ public class TicketService {
 
     public TicketResponse createTicket(CreateTicketRequest request){
         User createdBy = userRepository.findById(request.getCreatedBy()).orElseThrow(()->new NotFoundException("Created by user not found"));
-        User assignedTo = userRepository.findById(request.getAssignedTo()).orElseThrow(()->new NotFoundException("Assigned user not found"));
+
 
         Ticket ticket=new Ticket();
 
         ticket.setTitle(request.getTitle());
         ticket.setDescription((request.getDescription()));
         ticket.setStatus("OPEN");
-        ticket.setPriority("MEDIUM");
+        ticket.setPriority(request.getPriority());
         ticket.setCreatedBy(createdBy);
-        ticket.setAssignedTo(assignedTo);
+
 
         Ticket saved = ticketRepository.save(ticket);
 
@@ -52,7 +52,7 @@ public class TicketService {
                 saved.getDescription(),
                 saved.getStatus(),
                 saved.getCreatedBy().getName(),
-                saved.getAssignedTo().getName()
+                null
         );
     }
 
