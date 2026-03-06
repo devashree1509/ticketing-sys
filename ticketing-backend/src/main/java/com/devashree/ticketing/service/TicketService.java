@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final Logger logger=LoggerFactory.getLogger(TicketService.class);
 
     public TicketService(TicketRepository ticketRepository,UserRepository userRepository){
         this.ticketRepository=ticketRepository;
@@ -32,8 +35,7 @@ public class TicketService {
     }
 
     public TicketResponse createTicket(CreateTicketRequest request){
-        User createdBy = userRepository.findById(request.getCreatedBy()).orElseThrow(()->new NotFoundException("Created by user not found"));
-
+        User createdBy = userRepository.findAll().get(0);
 
         Ticket ticket=new Ticket();
 
@@ -46,6 +48,8 @@ public class TicketService {
 
         Ticket saved = ticketRepository.save(ticket);
 
+        logger.info("Ticket created with ID:{}",saved.getId());
+
         return new TicketResponse(
                 saved.getId(),
                 saved.getTitle(),
@@ -57,6 +61,8 @@ public class TicketService {
     }
 
     public TicketResponse getTicketById(Long id){
+
+        logger.info("Fetching ticket with ID:{}",id);
 
         Ticket ticket = ticketRepository.findById(id).orElseThrow(()->new NotFoundException("Ticket not found with id:"+id));
         return new TicketResponse(
@@ -76,8 +82,14 @@ public class TicketService {
         ticket.setDescription(request.getDescription());
         ticket.setCategory(request.getCategory());
         ticket.setPriority(request.getPriority());
+        ticket.setStatus(request.getStatus());
 
-        return ticketRepository.save(ticket);
+        Ticket updated=ticketRepository.save(ticket);
+
+        logger.info("Ticket updated with ID:{}", updated.getId());
+        logger.info("Ticket updated with status: {}",updated.getStatus());
+
+        return updated;
     }
 
    public void deleteTicket(Long id){
@@ -100,6 +112,8 @@ public class TicketService {
    ){
         Pageable pageable=PageRequest.of(page,size,Sort.by("id").descending());
 
+        logger.info("Fetching all tickets");
+
         Page<Ticket> ticketPage=ticketRepository.findAll(pageable);
 
         List<TicketResponse> filtered= ticketPage.getContent().stream()
@@ -116,7 +130,6 @@ public class TicketService {
                 ))
                 .toList();
         return new PageImpl<>(filtered,pageable, filtered.size());
-
 
     }
 

@@ -34,11 +34,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf-> csrf.disable())
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/auth/**","/admin/users").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/tickets/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .oauth2ResourceServer(oauth2->oauth2.jwt(jwt->jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                .oauth2ResourceServer(oauth2->oauth2.jwt());
         return http.build();
     }
     @Bean
@@ -68,17 +69,6 @@ public class SecurityConfig {
         String secret= "devashreeticketingsystemsecuresecretkey150905";
         SecretKey key = new SecretKeySpec(secret.getBytes(),"HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));
-    }
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
-        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthoritiesClaimName("role");
-        converter.setAuthorityPrefix("ROLE_");
-
-        JwtAuthenticationConverter jwtConverter=new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
-
-        return jwtConverter;
     }
 
 }

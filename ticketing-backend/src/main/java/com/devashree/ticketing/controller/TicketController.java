@@ -25,7 +25,7 @@ public class TicketController {
         this.ticketService=ticketService;
     }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
+
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createTicket(@RequestBody CreateTicketRequest request){
         TicketResponse response = ticketService.createTicket(request);
