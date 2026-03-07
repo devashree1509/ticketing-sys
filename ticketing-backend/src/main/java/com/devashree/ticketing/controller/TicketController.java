@@ -3,6 +3,7 @@ package com.devashree.ticketing.controller;
 import com.devashree.ticketing.dto.CreateTicketRequest;
 import com.devashree.ticketing.dto.TicketResponse;
 import com.devashree.ticketing.dto.UpdateTicketRequest;
+import com.devashree.ticketing.dto.UpdateTicketStatusRequest;
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.service.TicketService;
 import com.devashree.ticketing.util.ApiResponse;
@@ -70,10 +71,5 @@ public class TicketController {
         ticketService.deleteTicket(id);
        return ResponseEntity.ok(ApiResponse.success("Ticket deleted Successfully",null));
     }
-
-
-
-
-
 
 }

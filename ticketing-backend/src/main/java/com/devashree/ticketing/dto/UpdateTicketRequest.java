@@ -2,8 +2,13 @@ package com.devashree.ticketing.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class UpdateTicketRequest {
+
+    @NotBlank
+    private String status;
 
     @NotBlank(message = "Title is required")
     @Size(min = 3,max = 100, message = "Title must be 3-100 characters")

@@ -2,6 +2,7 @@ package com.devashree.ticketing.service;
 import com.devashree.ticketing.dto.CreateTicketRequest;
 import com.devashree.ticketing.dto.TicketResponse;
 import com.devashree.ticketing.dto.UpdateTicketRequest;
+import com.devashree.ticketing.dto.UpdateTicketStatusRequest;
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.entity.User;
 import com.devashree.ticketing.exception.NotFoundException;
@@ -75,21 +76,44 @@ public class TicketService {
         );
     }
 
-    public Ticket updateTicket(Long id, UpdateTicketRequest request){
-        Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new NotFoundException("Ticket not found"));
+    public Ticket updateTicket(Long id, UpdateTicketRequest request) {
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new NotFoundException("Ticket not found"));
+
+        String currentStatus=ticket.getStatus();
+        String newStatus=request.getStatus();
+
 
         ticket.setTitle(request.getTitle());
         ticket.setDescription(request.getDescription());
         ticket.setCategory(request.getCategory());
         ticket.setPriority(request.getPriority());
-        ticket.setStatus(request.getStatus());
+        ticket.setStatus(newStatus);
 
-        Ticket updated=ticketRepository.save(ticket);
+        if(!isValidTransition(currentStatus, newStatus)){
+            throw new IllegalArgumentException("Invalid ticket status transition");
+        }
+        ticket.setStatus(newStatus);
+
+        Ticket updated = ticketRepository.save(ticket);
 
         logger.info("Ticket updated with ID:{}", updated.getId());
-        logger.info("Ticket updated with status: {}",updated.getStatus());
+        logger.info("Ticket updated with status: {}", updated.getStatus());
 
         return updated;
+    }
+
+    private boolean isValidTransition(String current,String next){
+        if(current.equals("OPEN") && next.equals("IN_PROGRESS"))
+            return true;
+
+        if(current.equals("IN_PROGRESS") && next.equals("RESOLVED"))
+            return true;
+
+
+        if(current.equals("RESOLVED") && next.equals("CLOSED"))
+            return true;
+
+        return false;
     }
 
    public void deleteTicket(Long id){
