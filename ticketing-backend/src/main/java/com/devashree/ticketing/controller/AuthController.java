@@ -5,6 +5,7 @@ import com.devashree.ticketing.entity.User;
 import com.devashree.ticketing.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.web.bind.annotation.*;
@@ -13,17 +14,19 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationManager authenticationManager,JwtEncoder jwtEncoder,UserRepository userRepository){
+    public AuthController(AuthenticationManager authenticationManager,JwtEncoder jwtEncoder,UserRepository userRepository,PasswordEncoder passwordEncoder){
         this.authenticationManager=authenticationManager;
         this.jwtEncoder=jwtEncoder;
         this.userRepository=userRepository;
+        this.passwordEncoder=passwordEncoder;
     }
 
     @PostMapping("/login")
@@ -50,5 +53,10 @@ public class AuthController {
                 ).getTokenValue();
 
         return Map.of("token",token);
+    }
+    @PostMapping("/register")
+    public User register(@RequestBody User user){
+        user.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(user.getPassword()));
+        return userRepository.save(user);
     }
 }

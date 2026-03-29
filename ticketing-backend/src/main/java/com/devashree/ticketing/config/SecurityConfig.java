@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
@@ -18,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.List;
 
 
 @Configuration
@@ -34,12 +36,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf-> csrf.disable())
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/tickets/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .oauth2ResourceServer(oauth2->oauth2.jwt());
+                .oauth2ResourceServer(oauth2->oauth2.jwt(jwt->jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
     }
     @Bean
@@ -69,6 +71,17 @@ public class SecurityConfig {
         String secret= "devashreeticketingsystemsecuresecretkey150905";
         SecretKey key = new SecretKeySpec(secret.getBytes(),"HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter(){
+        JwtAuthenticationConverter converter=new JwtAuthenticationConverter();
+
+        converter.setJwtGrantedAuthoritiesConverter(jwt->{String role=jwt.getClaim("role");
+        if(role==null) return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_"+role));
+        });
+        return converter;
     }
 
 }

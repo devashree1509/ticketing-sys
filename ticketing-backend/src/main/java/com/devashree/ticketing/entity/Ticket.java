@@ -18,7 +18,9 @@ public class Ticket {
      private  Long id;
      private  String title;
      private  String description;
-     private  String status;
+     @Enumerated(EnumType.STRING)
+     @Column(name = "status")
+     private   TicketStatus status;
      private String category;
      private String priority;
 

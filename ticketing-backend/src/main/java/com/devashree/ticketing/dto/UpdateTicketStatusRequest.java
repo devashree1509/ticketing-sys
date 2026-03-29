@@ -1,5 +1,6 @@
 package com.devashree.ticketing.dto;
 
+import com.devashree.ticketing.entity.TicketStatus;
 import lombok.*;
 
 @Getter
@@ -9,5 +10,5 @@ import lombok.*;
 
 public class UpdateTicketStatusRequest {
 
-    private String status;
+    private TicketStatus status;
 }

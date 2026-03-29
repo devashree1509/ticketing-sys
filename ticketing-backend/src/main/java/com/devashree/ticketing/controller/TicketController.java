@@ -1,15 +1,14 @@
 package com.devashree.ticketing.controller;
 
-import com.devashree.ticketing.dto.CreateTicketRequest;
-import com.devashree.ticketing.dto.TicketResponse;
-import com.devashree.ticketing.dto.UpdateTicketRequest;
-import com.devashree.ticketing.dto.UpdateTicketStatusRequest;
+import com.devashree.ticketing.dto.*;
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.service.TicketService;
+import com.devashree.ticketing.entity.TicketStatus;
 import com.devashree.ticketing.util.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -65,6 +64,14 @@ public class TicketController {
         Ticket updateTicket = ticketService.updateTicket(id,request);
         return ResponseEntity.ok(updateTicket);
     }
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse> updateStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateTicketStatusRequest request){
+        ticketService.updateStatus(id,request.getStatus());
+
+        return ResponseEntity.ok(new ApiResponse(true,"Status updated",null));
+        }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTicket(@PathVariable Long id){

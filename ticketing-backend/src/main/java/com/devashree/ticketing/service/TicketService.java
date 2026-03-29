@@ -4,16 +4,22 @@ import com.devashree.ticketing.dto.TicketResponse;
 import com.devashree.ticketing.dto.UpdateTicketRequest;
 import com.devashree.ticketing.dto.UpdateTicketStatusRequest;
 import com.devashree.ticketing.entity.Ticket;
+import com.devashree.ticketing.entity.TicketStatus;
 import com.devashree.ticketing.entity.User;
+import com.devashree.ticketing.exception.BadRequestException;
+import com.devashree.ticketing.exception.ForbiddenException;
 import com.devashree.ticketing.exception.NotFoundException;
 import com.devashree.ticketing.repository.TicketRepository;
 import com.devashree.ticketing.repository.UserRepository;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +48,7 @@ public class TicketService {
 
         ticket.setTitle(request.getTitle());
         ticket.setDescription((request.getDescription()));
-        ticket.setStatus("OPEN");
+        ticket.setStatus(TicketStatus.OPEN);
         ticket.setPriority(request.getPriority());
         ticket.setCreatedBy(createdBy);
 
@@ -55,7 +61,7 @@ public class TicketService {
                 saved.getId(),
                 saved.getTitle(),
                 saved.getDescription(),
-                saved.getStatus(),
+                saved.getStatus().name(),
                 saved.getCreatedBy().getName(),
                 null
         );
@@ -70,7 +76,7 @@ public class TicketService {
                 ticket.getId(),
                 ticket.getTitle(),
                 ticket.getDescription(),
-                ticket.getStatus(),
+                ticket.getStatus().name(),
                 ticket.getCreatedBy().getName(),
                 ticket.getAssignedTo().getName()
         );
@@ -79,8 +85,8 @@ public class TicketService {
     public Ticket updateTicket(Long id, UpdateTicketRequest request) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new NotFoundException("Ticket not found"));
 
-        String currentStatus=ticket.getStatus();
-        String newStatus=request.getStatus();
+        TicketStatus currentStatus=ticket.getStatus();
+        TicketStatus newStatus= TicketStatus.valueOf(request.getStatus());
 
 
         ticket.setTitle(request.getTitle());
@@ -89,7 +95,9 @@ public class TicketService {
         ticket.setPriority(request.getPriority());
         ticket.setStatus(newStatus);
 
-        if(!isValidTransition(currentStatus, newStatus)){
+        String role = getCurrentUserRole();
+
+        if(!isValidTransition(currentStatus, newStatus,role)){
             throw new IllegalArgumentException("Invalid ticket status transition");
         }
         ticket.setStatus(newStatus);
@@ -102,20 +110,58 @@ public class TicketService {
         return updated;
     }
 
-    private boolean isValidTransition(String current,String next){
-        if(current.equals("OPEN") && next.equals("IN_PROGRESS"))
+    public void updateStatus(Long ticketId, TicketStatus newStatus){
+        Authentication auth=SecurityContextHolder.getContext().getAuthentication();
+        String role=auth.getAuthorities().iterator().next().getAuthority();
+        Ticket ticket=ticketRepository.findById(ticketId).orElseThrow(()->new NotFoundException("Ticket not found"));
+
+        TicketStatus currentStatus = ticket.getStatus();
+
+        if(role.equals("ROLE_CUSTOMER")){
+            throw new ForbiddenException("Customer cannot update ticket");
+        }
+        if(!isValidTransition(currentStatus,newStatus,role)){
+            throw new BadRequestException("Invald status transition");
+        }
+        ticket.setStatus(newStatus);
+        ticketRepository.save(ticket);
+
+    }
+    private String getCurrentUserRole(){
+        Authentication auth=SecurityContextHolder.getContext().getAuthentication();
+        if(auth == null || auth.getAuthorities().isEmpty()){
+            throw new RuntimeException("No roles found for user");
+        }
+
+        return auth.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_UNKNOWN");
+
+    }
+    private boolean isValidTransition(TicketStatus current,TicketStatus next,String role){
+        if(role.equals("ROLE_AGENT")){
+            if(current==TicketStatus.OPEN && next == TicketStatus.IN_PROGRESS)
             return true;
 
-        if(current.equals("IN_PROGRESS") && next.equals("RESOLVED"))
-            return true;
+            if(current==TicketStatus.IN_PROGRESS && next == TicketStatus.RESOLVED)
+                return true;
 
-
-        if(current.equals("RESOLVED") && next.equals("CLOSED"))
-            return true;
-
+            return false;
+        }
+        if(role.equals("ROLE_ADMIN")){
+            if(current==TicketStatus.RESOLVED && next == TicketStatus.CLOSED)
+                return true;
+            if(current==TicketStatus.CLOSED && next == TicketStatus.OPEN)
+                return true;
+            if(current==TicketStatus.OPEN && next == TicketStatus.IN_PROGRESS)
+                return true;
+            if(current==TicketStatus.IN_PROGRESS && next == TicketStatus.RESOLVED)
+                return true;
+        }
         return false;
     }
-
    public void deleteTicket(Long id){
         Ticket ticket=ticketRepository.findById(id).orElseThrow(()->new NotFoundException("Ticket not found"));
 
@@ -141,14 +187,14 @@ public class TicketService {
         Page<Ticket> ticketPage=ticketRepository.findAll(pageable);
 
         List<TicketResponse> filtered= ticketPage.getContent().stream()
-                .filter(t -> status == null || t.getStatus().equalsIgnoreCase(status))
+                .filter(t -> status == null || t.getStatus().name().equalsIgnoreCase(status))
                 .filter((t-> priority == null || t.getPriority().equalsIgnoreCase(priority)))
                 .filter(t-> search == null || t.getTitle().toLowerCase().contains(search.toLowerCase()))
                 .map(t ->new TicketResponse(
                         t.getId(),
                         t.getTitle(),
                         t.getDescription(),
-                        t.getStatus(),
+                        t.getStatus().name(),
                         t.getCreatedBy().getName(),
                         t.getAssignedTo().getName()
                 ))
