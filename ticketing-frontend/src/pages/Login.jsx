@@ -1,57 +1,39 @@
 import React ,{useState} from "react";
-import  {useNavigate} from "react-router-dom";
+import axiosInstance from "../api/axios";
 
 function Login(){
+    const[email,setEmail]=useState("");
+    const[password,setPassword]=useState("");
 
-    const navigate=useNavigate();
-     const [email,setEmail]=useState("");
-     const [password,setPassword]=useState("");
+    const handleLogin = async (e)=>{
+        e.preventDefault();
 
+        try{
+            const response=await axiosInstance.post("/auth/login",{
+                email,password});
 
-     const handleLogin = async () =>{
-         try{
-             const response = await fetch("http://localhost:8080/api/test");
+                const token=response.data.token;
+                localStorage.setItem("token",token);
+                console.log("Login Successfully");
+                window.location.href="/dashboard";
+                }catch(error){
+                    console.error("Login failed",error);
+                    }
+                };
+            return(
+                <form onSubmit={handleLogin}>
+                    <input
+                    type="email"
+                    placeholder="Enter Email="
+                    onChange={(e)=>setEmail(e.target.value)}/>
 
-             const data = await response.text();
+                    <input
+                    type="password"
+                    placeholder="Enter Password="
+                    onChange={(e)=>setPassword(e.target.value)}/>
 
-             alert("Backend response:"+data);
-
-             navigate("/dashboard");
-             console.log("Navigation happens");
-
-             console.log("Email:", email);
-             console.log("Password:", password);
-
-
-
-         } catch (e) {
-             console.error(e);
-             alert("Error in connecting backend");
-
-         }
-     };
-
-     return(
-         <div>
-             <h2>Login page</h2>
-             <input
-                type="email"
-                placeholder="Enter Email"
-                value={email}
-                onChange={(e)=>setEmail(e.target.value)}
-             /><br></br>
-
-             <input
-             type="password"
-             placeholder="Enter Password"
-             value={password}
-             onChange={(e)=>setPassword(e.target.value)}
-             /> <br></br>
-             <button onClick={handleLogin} > Login </button>
-         </div>
-     );
- }
- export default Login;
-
-
-
+                    <button type="submit">Login</button>
+                    </form>
+                    );
+                }
+    export default Login;
