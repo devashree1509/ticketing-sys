@@ -1,5 +1,6 @@
 import React,{ useEffect,useState} from "react";
 import axiosInstance from "../api/axios";
+import { Link } from "react-router-dom";
 
 function Tickets(){
     const[tickets,setTickets]=useState([]);
@@ -25,7 +26,7 @@ function Tickets(){
             {tickets.length === 0 ? (
                 <p>No Tickets found </p>
                     ):(
-                        <table border = "1" cellpadding = "10">
+                        <table border = "1" cellPadding = "10">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -40,7 +41,9 @@ function Tickets(){
                                     .map((ticket)=>(
                                     <tr key={ticket.id}>
                                         <td>{ticket.id}</td>
-                                        <td>{ticket.title}</td>
+                                        <td>
+                                            <Link to={`/tickets/${ticket.id}`}>
+                                            {ticket.title}</Link></td>
                                         <td>{ticket.status}</td>
                                         </tr>
                                         ))}
