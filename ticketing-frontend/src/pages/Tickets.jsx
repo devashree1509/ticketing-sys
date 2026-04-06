@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 function Tickets(){
     const[tickets,setTickets]=useState([]);
 
+
     const fetchTickets = async () => {
         try{
             const res = await axiosInstance.get("/tickets");
