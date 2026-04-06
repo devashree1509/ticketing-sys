@@ -1,14 +1,20 @@
 import React,{ useEffect,useState} from "react";
 import axiosInstance from "../api/axios";
 import { Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 function Tickets(){
     const[tickets,setTickets]=useState([]);
+    const[searchParams,setSearchParams] = useSearchParams();
+    const search = searchParams.get("search") || "";
+    const status = searchParams.get("status") || "";
 
 
     const fetchTickets = async () => {
         try{
-            const res = await axiosInstance.get("/tickets");
+            const res = await axiosInstance.get("/tickets",{
+                params:{search:search,status:status,},
+                });
             console.log(res.data);
             setTickets(res.data.data.content);
             } catch(err){
@@ -18,11 +24,32 @@ function Tickets(){
 
         useEffect(() => {
             fetchTickets();
-            }, []);
+            }, [search,status]);
 
         return (
            <div>
              <h2>Ticket List</h2>
+
+             <input
+             type="text"
+             placeholder="Search tickets.."
+             value={search}
+             onChange = {(e) => {
+                 setSearchParams({search: e.target.value, status});
+                 }}
+             />
+
+             <select
+             value={status}
+             onChange={(e) => {setSearchParams({search, status: e.target.value});
+             }}
+            style={{marginLeft: "10px"}}>
+
+            <option value="">All</option>
+            <option value="OPEN">OPEN</option>
+            <option value="IN_PROGRESS">IN_PROGRESS</option>
+            <option value="RESOLVED">RESOLVED</option>
+        </select>
 
             {tickets.length === 0 ? (
                 <p>No Tickets found </p>
