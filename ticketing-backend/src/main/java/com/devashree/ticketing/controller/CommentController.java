@@ -26,7 +26,7 @@ public class CommentController {
 
         Long currentUserId = 1L;
 
-        return commentService.addComment(ticketId, request, currentUserId);
+        return commentService.addComment(ticketId, request, request.getUserId());
     }
 
     // GET /api/tickets/{id}/comments

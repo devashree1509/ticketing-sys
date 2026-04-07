@@ -5,13 +5,12 @@ import { getUserRole } from "../utils/auth";
 
 function TicketDetail(){
     const { id }= useParams();
-
+    const role=getUserRole();
     const[ticket, setTicket] = useState(null);
     const[comments, setComments] = useState([]);
     const[newComment, setNewComment] = useState("");
     const[status, setStatus] = useState("");
     const[agentId, setAgentId]=useState("");
-    const role=getUserRole();
 
     console.log(getUserRole());
 
@@ -29,7 +28,7 @@ function TicketDetail(){
     const fetchComments = async () => {
         try{
             const res= await axiosInstance.get(`/tickets/${id}/comments`);
-            setComments(res.data.data);
+            setComments(res.data);
             }catch(err){
                 console.log(err);
                 }
@@ -42,9 +41,12 @@ function TicketDetail(){
     const handleAddComment = async () => {
         if(!newComment.trim()) return;
 
+        const user = JSON.parse(localStorage.getItem("user"));
+
         try{
             await axiosInstance.post(`/tickets/${id}/comments`,{
-                content: newComment,
+                message: newComment,
+                userId: user.id
                 });
             setNewComment("");
             fetchComments();
@@ -72,62 +74,73 @@ function TicketDetail(){
                 }catch(err){
                     console.log(err);
                     }
-            }
-    return(
-        <div>
-            <h2>Ticket Detail</h2>
-            {ticket && (
-                <div>
-                    <h3>{ticket.title}</h3>
-                    <p>{ticket.description}</p>
-                    <p>Status:{ticket.status}</p>
+                };
+
+        return(
+            <div>
+                <h2>Ticket Detail</h2>
+                {ticket && (
+                    <div>
+                        <h3>{ticket.title}</h3>
+                        <p>{ticket.description}</p>
+                        <p>Status:{ticket.status}</p>
                     </div>
                     )}
                 <br />
 
-               {(role === "ADMIN" || role === "AGENT") &&(
-                   <div>
-                       <h3>Update Status</h3>
-
-                       <select onChange={(e) => setStatus(e.target.value)}>
-                           <option value="OPEN">OPEN</option>
-                           <option value="IN_PROGRESS">IN_PROGRESS</option>
-                           <option value="RESOLVED">RESOLVED</option>
-                           </select>
-
-                           <button onClick={handleStatusUpdate}>Update Status</button>
-                           </div>
-                       )}
-
-                       { role === "ADMIN" &&(
-                           <div>
-                       <h3>Assign Ticket</h3>
-                       <input type="text"
-                       placeholder="Enter Agent id "
-                       onChange={(e)=> setAgentId(e.target.value)}/>
-
-                       <button onClick={handleAssign}>Assign</button>
-                       </div>
-                   )}
-
                 <h3>Comments</h3>
-                {comments && comments.map((c)=>(
-                    <div key={c.id}>
-                        <p>{c.content}</p>
+
+                {comments.length === 0 ?(
+                    <p>No comments</p>
+                    ):(
+                        comments.map((c) => (
+                            <div key={c.id}>
+                                <strong>{c.author?.name}</strong>: {c.message}
+                               </div>
+                               ))
+                            )}
+                        <textarea
+                        placeholder="Add comments..."
+                        value={newComment}
+                        onChange={(e)=>setNewComment(e.target.value)}
+                        />
+
+                        <br />
+
+                        <button onClick={handleAddComment}>Send</button>
+
+                        <hr />
+
+                        {(role === "ADMIN" || role === "AGENT") && (
+                            <div>
+                                <h3>Update status</h3>
+
+                                <select onChange={(e) => setStatus(e.target.value)}>
+                                    <option value="OPEN">OPEN</option>
+                                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                    <option value="RESOLVED">RESOLVED</option>
+                                    <option value="CLOSED">CLOSED</option>
+                                </select>
+
+                                <button onClick={handleStatusUpdate}>Update Status</button>
+                                </div>
+
+                            )}
+                        {role === "ADMIN" && (
+                            <div>
+                                <h3>Assign Tickets</h3>
+
+                                <input
+                                type="text"
+                                placeholder="Enter Agent ID:"
+                                onChange={(e) => setAgentId(e.target.value)}
+                                />
+
+                                <button onClick={handleAssign}>Assign</button>
+                                </div>
+                            )}
                         </div>
-                       ))}
 
-                   <input
-                   type="text"
-                   placeholder="Add Comment"
-                   value={newComment}
-                   onChange={(e)=> setNewComment(e.target.value)}
-                   />
-
-                   <button onClick={handleAddComment}>Add</button>
-                   </div>
-
-        );
- }
-
+                    );
+                }
 export default TicketDetail;

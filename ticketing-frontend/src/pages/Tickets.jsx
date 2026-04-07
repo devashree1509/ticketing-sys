@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 function Tickets(){
     const[tickets,setTickets]=useState([]);
     const[searchParams,setSearchParams] = useSearchParams();
+    const user = JSON.parse(localStorage.getItem("user"));
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
 
@@ -13,13 +14,29 @@ function Tickets(){
     const fetchTickets = async () => {
         try{
             const res = await axiosInstance.get("/tickets",{
-                params:{search:search,status:status,},
+                params:{
+                    ...(search && { search }),
+                    ...(status !== "" && { status }),
+                    },
                 });
             console.log(res.data);
             setTickets(res.data.data.content);
             } catch(err){
                 console.log(err);
                 }
+            };
+
+        const handleDelete = async (id) =>{
+            const confirmDelete = window.confirm("Are you sure you want to Delete??");
+            if(!confirmDelete) return;
+            try{
+                await axiosInstance.delete(`/tickets/${id}`);
+                alert("Deleted Successfully");
+                fetchTickets();
+                }catch(err){
+                    console.log(err);
+                    alert("Delete failed");
+                    }
             };
 
         useEffect(() => {
@@ -30,12 +47,20 @@ function Tickets(){
            <div>
              <h2>Ticket List</h2>
 
+             {user?.role === "CUSTOMER" && (
+                 <Link to="/tickets/new">
+                 <button>Create Ticket</button>
+                 </Link>)}
+
              <input
              type="text"
              placeholder="Search tickets.."
              value={search}
              onChange = {(e) => {
-                 setSearchParams({search: e.target.value, status});
+                 setSearchParams({
+                     ...(e.target.value && { search: e.target.value}),
+                     ...(status && {status}),
+                     });
                  }}
              />
 
@@ -51,7 +76,7 @@ function Tickets(){
             <option value="RESOLVED">RESOLVED</option>
         </select>
 
-            {tickets.length === 0 ? (
+           {tickets.length === 0 ? (
                 <p>No Tickets found </p>
                     ):(
                         <table border = "1" cellPadding = "10">
@@ -60,6 +85,7 @@ function Tickets(){
                                     <th>ID</th>
                                     <th>Title</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
 
@@ -73,6 +99,8 @@ function Tickets(){
                                             <Link to={`/tickets/${ticket.id}`}>
                                             {ticket.title}</Link></td>
                                         <td>{ticket.status}</td>
+                                        <td><button onClick={() => handleDelete(ticket.id)}>Delete</button>
+                                            </td>
                                         </tr>
                                         ))}
                                     </tbody>

@@ -78,7 +78,7 @@ public class TicketService {
                 ticket.getDescription(),
                 ticket.getStatus().name(),
                 ticket.getCreatedBy().getName(),
-                ticket.getAssignedTo().getName()
+                ticket.getAssignedTo()!=null? ticket.getAssignedTo().getName():"Not Assigned"
         );
     }
 
@@ -196,7 +196,7 @@ public class TicketService {
                         t.getDescription(),
                         t.getStatus().name(),
                         t.getCreatedBy().getName(),
-                        t.getAssignedTo().getName()
+                        t.getAssignedTo() !=null? t.getAssignedTo().getName(): "Unassigned"
                 ))
                 .toList();
         return new PageImpl<>(filtered,pageable, filtered.size());

@@ -13,13 +13,11 @@ function Login(){
                 email,password});
                 const token = response.data.token;
                 localStorage.setItem("token",token);
+                localStorage.setItem("user", JSON.stringify({
+                    id: response.data.id,
+                    name: response.data.name,
+                    role: response.data.role}));
 
-                const decoded = jwtDecode(token);
-                console.log("Decoded token:",decoded);
-
-                const role=decoded.role || decoded.authorities?.[0]?.replace("ROLE_","");
-
-                localStorage.setItem("user", JSON.stringify({role}));
                 console.log("Login Successfully");
                  window.location.href="/dashboard";
                 }catch(error){

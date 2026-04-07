@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String,String> login(@RequestBody AuthRequest request){
+    public Map<String,Object> login(@RequestBody AuthRequest request){
         Authentication authentication= authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
                 request.getPassword()
@@ -52,7 +52,11 @@ public class AuthController {
                                 claims)
                 ).getTokenValue();
 
-        return Map.of("token",token);
+        return Map.of("token",token,
+                "id",user.getId(),
+                "name",user.getName(),
+                "role",user.getRole().name()
+        );
     }
     @PostMapping("/register")
     public User register(@RequestBody User user){

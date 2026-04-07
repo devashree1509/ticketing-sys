@@ -4,6 +4,8 @@ public class CreateCommentRequest {
 
     private String message;
 
+    private Long userId;
+
     public CreateCommentRequest() {}
 
     public String getMessage() {
@@ -12,5 +14,13 @@ public class CreateCommentRequest {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -20,6 +20,7 @@ public class CommentService {
         this.commentRepository = commentRepository;
         this.ticketRepository = ticketRepository;
         this.userRepository = userRepository;
+
     }
 
     // POST comment
@@ -35,6 +36,7 @@ public class CommentService {
         comment.setTicket(ticket);
         comment.setAuthor(author);
         comment.setMessage(request.getMessage());
+        System.out.println("User ID: " + currentUserId);
 
         return commentRepository.save(comment);
     }

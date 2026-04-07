@@ -47,7 +47,7 @@ public class TicketController {
             @RequestParam(required = false) String priority,
             @RequestParam(required = false) String search
     ){
-      Page<TicketResponse> tickets=ticketService.getTickets(page, size, status,priority,search);
+      Page<TicketResponse> tickets=ticketService.getTickets( page, size,status,priority,search);
         return ResponseEntity.ok(ApiResponse.success("Ticket fetched successfully",tickets));
     }
 
