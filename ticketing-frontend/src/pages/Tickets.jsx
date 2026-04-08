@@ -10,29 +10,37 @@ function Tickets(){
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
 
+const fetchTickets = async () => {
+    try {
+        const res = await axiosInstance.get("/tickets", {
+            params: {
+                ...(search && { search }),
+                ...(status !== "" && { status }),
+            }
+        });
 
-    const fetchTickets = async () => {
-        try{
-            const res = await axiosInstance.get("/tickets",{
-                params:{
-                    ...(search && { search }),
-                    ...(status !== "" && { status }),
-                    },
-                });
-            console.log(res.data);
+        if (res.data.success) {
             setTickets(res.data.data.content);
-            } catch(err){
-                console.log(err);
-                }
-            };
+        } else {
+            alert(res.data.message);
+        }
 
+    } catch (err) {
+        console.log(err);
+    }
+};
         const handleDelete = async (id) =>{
             const confirmDelete = window.confirm("Are you sure you want to Delete??");
             if(!confirmDelete) return;
             try{
-                await axiosInstance.delete(`/tickets/${id}`);
-                alert("Deleted Successfully");
-                fetchTickets();
+                const res = await axiosInstance.delete(`/tickets/${id}`);
+                if(res.data.success){
+                    alert(res.data.message);
+                    fetchTickets();
+                    }
+                else{
+                    alert(res.data.message);
+                    }
                 }catch(err){
                     console.log(err);
                     alert("Delete failed");

@@ -14,69 +14,97 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/tickets")
-
 public class TicketController {
+
     private final TicketService ticketService;
 
     public TicketController(TicketService ticketService){
-        this.ticketService=ticketService;
+        this.ticketService = ticketService;
     }
 
-
+    // ✅ CREATE
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> createTicket(@RequestBody CreateTicketRequest request){
+    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(@RequestBody CreateTicketRequest request){
         TicketResponse response = ticketService.createTicket(request);
         return ResponseEntity.ok(
-                ApiResponse.success("Ticket created successfullyy",response));
+                ApiResponse.success("Ticket created successfully", response)
+        );
     }
 
+    // ✅ ADMIN TEST
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/test")
     public String adminTest(){
         return "Admin access Granted";
     }
 
+    // ✅ GET ALL
     @GetMapping
-    public ResponseEntity<ApiResponse<?>>getTickets(
+    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTickets(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String priority,
             @RequestParam(required = false) String search
     ){
-      Page<TicketResponse> tickets=ticketService.getTickets( page, size,status,priority,search);
-        return ResponseEntity.ok(ApiResponse.success("Ticket fetched successfully",tickets));
+        Page<TicketResponse> tickets = ticketService.getTickets(page, size, status, priority, search);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Tickets fetched successfully", tickets)
+        );
     }
 
+    // ✅ GET BY ID (FIXED)
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> getTicketById(@PathVariable Long id){
-       TicketResponse response = ticketService.getTicketById(id);
-       return ResponseEntity.ok(ApiResponse.success("Ticket fetched successfully",response));
-    }
+    public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable Long id){
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateTicket(
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateTicketRequest request){
-        Ticket updateTicket = ticketService.updateTicket(id,request);
-        return ResponseEntity.ok(updateTicket);
-    }
-    @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse> updateStatus(
-            @PathVariable Long id,
-            @RequestBody UpdateTicketStatusRequest request){
-        ticketService.updateStatus(id,request.getStatus());
+        TicketResponse ticket = ticketService.getTicketById(id);
 
-        return ResponseEntity.ok(new ApiResponse(true,"Status updated",null));
+        if(ticket == null){
+            return ResponseEntity.status(404)
+                    .body(ApiResponse.error("Ticket not found", "TICKET_NOT_FOUND"));
         }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTicket(@PathVariable Long id){
-        ticketService.deleteTicket(id);
-       return ResponseEntity.ok(ApiResponse.success("Ticket deleted Successfully",null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Ticket fetched successfully", ticket)
+        );
     }
 
+    // ✅ UPDATE FULL TICKET
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<Ticket>> updateTicket(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTicketRequest request){
+
+        Ticket updatedTicket = ticketService.updateTicket(id, request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Ticket updated successfully", updatedTicket)
+        );
+    }
+
+    // ✅ UPDATE STATUS (FIXED)
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<Void>> updateStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateTicketStatusRequest request){
+
+        ticketService.updateStatus(id, request.getStatus());
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Status updated successfully", null)
+        );
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteTicket(@PathVariable Long id){
+        ticketService.deleteTicket(id);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Ticket deleted successfully", null)
+        );
+    }
 }

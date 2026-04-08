@@ -18,7 +18,11 @@ function TicketDetail(){
         try{
             const res= await axiosInstance.get(`/tickets/${id}`);
             console.log("TICKET:",res.data);
+            if(res.data.success){
             setTicket(res.data.data);
+            }else{
+                alert(res.data.message);
+                }
             }
         catch(err){
             console.log(err);

@@ -1,27 +1,34 @@
 import React ,{useState} from "react";
-import axiosInstance from "../api/axios";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+
 
 function Login(){
+
     const[email,setEmail]=useState("");
     const[password,setPassword]=useState("");
 
     const handleLogin = async (e) => {
          e.preventDefault();
+
         try{
-            const response=await axiosInstance.post("/auth/login",{
+            const res=await axios.post("http://localhost:8080/api/auth/login",{
                 email,password});
-                const token = response.data.token;
+                if(res.data.success){
+                    const data=res.data.data;
+                const token = res.data.data.token;
                 localStorage.setItem("token",token);
                 localStorage.setItem("user", JSON.stringify({
-                    id: response.data.id,
-                    name: response.data.name,
-                    role: response.data.role}));
-
-                console.log("Login Successfully");
+                    id: data.id,
+                    name: data.name,
+                    role: data.role}));
+                alert("Login Successfully");
                  window.location.href="/dashboard";
+                 }else{
+                     alert("Login failed");
+                     }
                 }catch(error){
                     console.error("Login failed",error);
+                    alert("Invalid credentials");
                     }
 
                 };
@@ -42,7 +49,7 @@ function Login(){
                     placeholder="Enter Password"
                     onChange={(e)=>setPassword(e.target.value)}/>
 
-                    <button type="button" onClick={handleLogin}>Login</button>
+                    <button type="submit">Login</button>
                     </form>
                     );
                 }

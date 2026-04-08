@@ -22,15 +22,19 @@ function CreateTicket(){
                 description,
                 priority
                 });
-            alert("Ticket created");
 
-            navigate("/tickets");
+            if(res.data.success){
+                alert(res.data.message);
+                navigate("/tickets");
+                }else{
+                alert(res.data.message);
+                }
             }
         catch(err){
             console.log(err);
             alert("Error in Creating ticket");
             }
-         }
+         };
     return(
         <div>
             <h2>Create Ticket</h2>

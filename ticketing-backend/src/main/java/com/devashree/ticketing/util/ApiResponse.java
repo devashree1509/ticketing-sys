@@ -7,21 +7,23 @@ public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
+    private String errorCode;
     private String timestamp;
 
-    public ApiResponse(boolean success,String message,T data){
+    public ApiResponse(boolean success,String message,T data,String errorCode){
         this.success=success;
         this.message=message;
         this.data=data;
+        this.errorCode=errorCode;
         this.timestamp=LocalDateTime.now().toString();
     }
 
-    public static <T> ApiResponse<T> success(String message,T data){
-        return new ApiResponse<>(true,message,data);
+    public static <T> ApiResponse<T> success(String message, T data){
+        return new ApiResponse<>(true,message,data,null);
     }
 
-    public static <T> ApiResponse<T> failure(String message){
-        return new ApiResponse<>(false,message,null);
+    public static <T> ApiResponse<T> error(String message,String errorCode){
+        return new ApiResponse<>(false,message,null,errorCode);
     }
 
     public boolean isSuccess() {
@@ -34,6 +36,10 @@ public class ApiResponse<T> {
 
     public T getData() {
         return data;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
     }
 
     public String getTimestamp() {

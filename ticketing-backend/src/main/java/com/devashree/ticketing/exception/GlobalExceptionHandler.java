@@ -15,9 +15,8 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<?>> handleApiException(ApiException ex){
-        return ResponseEntity
-                .status(ex.getStatus())
-                .body(ApiResponse.failure(ex.getMessage()));
+        return ResponseEntity.status(500)
+                .body(ApiResponse.error("Something went Wrong","INTERNAL_SERVER_ERROR"));
     }
 }
 
