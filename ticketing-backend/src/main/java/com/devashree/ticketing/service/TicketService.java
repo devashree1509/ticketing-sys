@@ -86,21 +86,21 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new NotFoundException("Ticket not found"));
 
         TicketStatus currentStatus=ticket.getStatus();
-        TicketStatus newStatus= TicketStatus.valueOf(request.getStatus());
+        TicketStatus newStatus= TicketStatus.valueOf(request.getStatus().toUpperCase());
 
 
         ticket.setTitle(request.getTitle());
         ticket.setDescription(request.getDescription());
         ticket.setCategory(request.getCategory());
+        ticket.setStatus(TicketStatus.valueOf(request.getStatus()));
         ticket.setPriority(request.getPriority());
-        ticket.setStatus(newStatus);
 
         String role = getCurrentUserRole();
 
         if(!isValidTransition(currentStatus, newStatus,role)){
             throw new IllegalArgumentException("Invalid ticket status transition");
         }
-        ticket.setStatus(newStatus);
+
 
         Ticket updated = ticketRepository.save(ticket);
 

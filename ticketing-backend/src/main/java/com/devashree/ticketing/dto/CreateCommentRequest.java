@@ -6,7 +6,8 @@ public class CreateCommentRequest {
 
     private Long userId;
 
-    public CreateCommentRequest() {}
+    public CreateCommentRequest() {
+    }
 
     public String getMessage() {
         return message;
@@ -16,11 +17,4 @@ public class CreateCommentRequest {
         this.message = message;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }

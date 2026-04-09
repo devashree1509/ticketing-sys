@@ -13,17 +13,19 @@ function Login(){
         try{
             const res=await axios.post("http://localhost:8080/api/auth/login",{
                 email,password});
-                if(res.data.success){
-                    const data=res.data.data;
-                const token = res.data.data.token;
-                localStorage.setItem("token",token);
+
+                if(res.data.token){
+
+                localStorage.setItem("token",res.data.token);
+
                 localStorage.setItem("user", JSON.stringify({
-                    id: data.id,
-                    name: data.name,
-                    role: data.role}));
-                alert("Login Successfully");
-                 window.location.href="/dashboard";
-                 }else{
+                    id: res.data.id,
+                    name: res.data.name,
+                    role: res.data.role}));
+
+                   alert("Login Successfully");
+                   window.location.href="/dashboard";
+                }else{
                      alert("Login failed");
                      }
                 }catch(error){

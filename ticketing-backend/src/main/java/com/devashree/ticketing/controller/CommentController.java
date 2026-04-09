@@ -2,8 +2,12 @@ package com.devashree.ticketing.controller;
 
 import com.devashree.ticketing.dto.CreateCommentRequest;
 import com.devashree.ticketing.entity.TicketComment;
+import com.devashree.ticketing.entity.User;
 import com.devashree.ticketing.service.CommentService;
 
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,9 +28,8 @@ public class CommentController {
             @PathVariable Long ticketId,
             @RequestBody CreateCommentRequest request) {
 
-        Long currentUserId = 1L;
-
-        return commentService.addComment(ticketId, request, request.getUserId());
+        Long currentUserId=1L;
+        return commentService.addComment(ticketId, request, currentUserId);
     }
 
     // GET /api/tickets/{id}/comments

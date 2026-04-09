@@ -1,0 +1,489 @@
+{
+  "info": {
+    "_postman_id": "34eed163-a458-4079-8a93-44e73e31ea16",
+    "name": "Ticketing System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51062592",
+    "_collection_link": "https://go.postman.co/collection/51062592-34eed163-a458-4079-8a93-44e73e31ea16?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let response = pm.response.json();\r",
+              "pm.environment.set(\"token\", response.token);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"customer@test.com\",\r\n  \"password\": \"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register",
+      "request": {
+        "auth": {
+          "type": "bearer"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"name\": \"Agent1\",\r\n  \"email\": \"agent@test.com\",\r\n  \"password\": \"123456\",\r\n  \"role\": \"AGENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Ticket",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiY3VzdG9tZXJAdGVzdC5jb20iLCJyb2xlIjoiQ1VTVE9NRVIiLCJleHAiOjE3NzU3NTA5NjksImlhdCI6MTc3NTY2NDU2OX0.Z0mQDN_JNtEZR3FRhzimlPHJc0LutAXUZIca6q8bj9A",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Test Ticket\",\r\n  \"description\": \"Testing API\",\r\n  \"priority\": \"HIGH\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/tickets",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "tickets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Tickets",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiY3VzdG9tZXJAdGVzdC5jb20iLCJyb2xlIjoiQ1VTVE9NRVIiLCJleHAiOjE3NzU3NTA5NjksImlhdCI6MTc3NTY2NDU2OX0.Z0mQDN_JNtEZR3FRhzimlPHJc0LutAXUZIca6q8bj9AZWxmIiwic3ViIjoiY3VzdG9tZXJAdGVzdC5jb20iLCJyb2xlIjoiQ1VTVE9NRVIiLCJleHAiOjE3NzU3NTA5NjksImlhdCI6MTc3NTY2NDU2OX0.Z0mQDN_JNtEZR3FRhzimlPHJc0LutAXUZIca6q8bj9A\"\n}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/tickets",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "tickets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Ticket By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tickets/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Ticket",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Updated title\",\r\n  \"description\": \"Updated description\",\r\n  \"priority\": \"MEDIUM\",\r\n  \"status\": \"IN_PROGRESS\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Ticket",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filter By Status",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tickets?status=OPEN",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "OPEN"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filter By Priority",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tickets?priority=HIGH",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets"
+          ],
+          "query": [
+            {
+              "key": "priority",
+              "value": "HIGH"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Comments",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userId\": 1,\r\n  \"comment\": \"This issue is being investigated\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/1/comments",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets",
+            "1",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tickets?search=login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets"
+          ],
+          "query": [
+            {
+              "key": "search",
+              "value": "login"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Comments",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tickets/1/comments",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tickets",
+            "1",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update status",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWdlbnRAdGVzdC5jb20iLCJyb2xlIjoiQUdFTlQiLCJleHAiOjE3NzQ4NjQ3ODIsImlhdCI6MTc3NDc3ODM4Mn0.-jX8OEmUxafbZngLwJ3LLJph5JSkG2dI2z-STr7G3sk",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"status\":\"IN_PROGRESS\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/tickets/{id}/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "tickets",
+            "{id}",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "{{base_url}}",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
