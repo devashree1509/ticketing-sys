@@ -24,7 +24,7 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    // ✅ CREATE
+
     @PostMapping
     public ResponseEntity<ApiResponse<TicketResponse>> createTicket(@RequestBody CreateTicketRequest request){
         TicketResponse response = ticketService.createTicket(request);
@@ -33,14 +33,14 @@ public class TicketController {
         );
     }
 
-    // ✅ ADMIN TEST
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/test")
     public String adminTest(){
         return "Admin access Granted";
     }
 
-    // ✅ GET ALL
+
     @GetMapping
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTickets(
             @RequestParam(defaultValue = "0") int page,
@@ -56,7 +56,7 @@ public class TicketController {
         );
     }
 
-    // ✅ GET BY ID (FIXED)
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable Long id){
 
@@ -72,7 +72,6 @@ public class TicketController {
         );
     }
 
-    // ✅ UPDATE FULL TICKET
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Ticket>> updateTicket(
             @PathVariable Long id,
@@ -85,7 +84,7 @@ public class TicketController {
         );
     }
 
-    // ✅ UPDATE STATUS (FIXED)
+
     @PutMapping("/{id}/status")
     public ResponseEntity<ApiResponse<Void>> updateStatus(
             @PathVariable Long id,
