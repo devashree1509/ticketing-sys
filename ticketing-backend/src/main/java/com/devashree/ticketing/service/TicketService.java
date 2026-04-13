@@ -67,6 +67,19 @@ public class TicketService {
         );
     }
 
+    public void assignTicket(Long ticketId, Long userId) {
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        ticket.setAssignedTo(user);
+
+        ticketRepository.save(ticket);
+    }
+
     public TicketResponse getTicketById(Long id){
 
         logger.info("Fetching ticket with ID:{}",id);
