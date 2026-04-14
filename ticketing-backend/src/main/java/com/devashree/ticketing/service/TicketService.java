@@ -63,7 +63,9 @@ public class TicketService {
                 saved.getDescription(),
                 saved.getStatus().name(),
                 saved.getCreatedBy().getName(),
-                null
+                null,
+                saved.getCreatedAt(),
+                saved.getUpdatedAt()
         );
     }
 
@@ -91,7 +93,9 @@ public class TicketService {
                 ticket.getDescription(),
                 ticket.getStatus().name(),
                 ticket.getCreatedBy().getName(),
-                ticket.getAssignedTo()!=null? ticket.getAssignedTo().getName():"Not Assigned"
+                ticket.getAssignedTo()!=null? ticket.getAssignedTo().getName():"Not Assigned",
+                ticket.getCreatedAt(),
+                ticket.getUpdatedAt()
         );
     }
 
@@ -209,7 +213,10 @@ public class TicketService {
                         t.getDescription(),
                         t.getStatus().name(),
                         t.getCreatedBy().getName(),
-                        t.getAssignedTo() !=null? t.getAssignedTo().getName(): "Unassigned"
+                        t.getAssignedTo() !=null? t.getAssignedTo().getName(): "Unassigned",
+                        t.getCreatedAt(),
+                        t.getUpdatedAt()
+
                 ))
                 .toList();
         return new PageImpl<>(filtered,pageable, filtered.size());

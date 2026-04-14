@@ -27,10 +27,20 @@ public class Ticket {
      @Column(name="created_at")
      private LocalDateTime createdAt;
 
+     @Column(name="updated_at")
+     private LocalDateTime updatedAt;
+
      @PrePersist
-     protected void onCreate(){
+     public void onCreate(){
          this.createdAt=LocalDateTime.now();
+         this.updatedAt=LocalDateTime.now();
      }
+
+     @PreUpdate
+     public void onUpdate(){
+         this.updatedAt=LocalDateTime.now();
+     }
+
 
      @ManyToOne //MANY tickets can created by ONE User
      @JoinColumn(name="created_by")

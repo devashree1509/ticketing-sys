@@ -17,7 +17,7 @@ function CreateTicket(){
             return;
             }
         try{
-            await axiosInstance.post("/tickets",{
+            const res = await axiosInstance.post("/tickets",{
                 title,
                 description,
                 priority

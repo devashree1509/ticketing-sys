@@ -47,6 +47,14 @@ const fetchTickets = async () => {
                     }
             };
 
+        const formatDate = (date) => {
+            if(!date) return "N/A";
+            return new Date(date).toLocaleString("en-In",{
+                dataStyle: "medium",
+                timeStyle: "short"
+                });
+            };
+
         useEffect(() => {
             fetchTickets();
             }, [search,status]);
@@ -94,6 +102,8 @@ const fetchTickets = async () => {
                                     <th>Title</th>
                                     <th>Status</th>
                                     <th>Action</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
                                 </tr>
                             </thead>
 
@@ -109,6 +119,8 @@ const fetchTickets = async () => {
                                         <td>{ticket.status}</td>
                                         <td><button onClick={() => handleDelete(ticket.id)}>Delete</button>
                                             </td>
+                                            <td>{formatDate(ticket.createdAt)}</td>
+                                            <td>{formatDate(ticket.updatedAt)}</td>
                                         </tr>
                                         ))}
                                     </tbody>
