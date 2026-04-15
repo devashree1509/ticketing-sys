@@ -26,7 +26,7 @@ public class TicketController {
 
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(@RequestBody CreateTicketRequest request){
+    public ResponseEntity<ApiResponse<TicketResponse>> createTicket( @Valid @RequestBody CreateTicketRequest request){
         TicketResponse response = ticketService.createTicket(request);
         return ResponseEntity.ok(
                 ApiResponse.success("Ticket created successfully", response)

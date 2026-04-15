@@ -21,4 +21,14 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name="is_active")
+    private boolean isActive = true;
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

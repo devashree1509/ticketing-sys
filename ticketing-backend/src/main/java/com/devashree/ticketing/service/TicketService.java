@@ -42,7 +42,11 @@ public class TicketService {
     }
 
     public TicketResponse createTicket(CreateTicketRequest request){
-        User createdBy = userRepository.findAll().get(0);
+        User user = getCurrentUser();
+
+        if(!user.isActive()){
+            throw new BadRequestException("User not found");
+        }
 
         Ticket ticket=new Ticket();
 
@@ -50,7 +54,7 @@ public class TicketService {
         ticket.setDescription((request.getDescription()));
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setPriority(request.getPriority());
-        ticket.setCreatedBy(createdBy);
+        ticket.setCreatedBy(user);
 
 
         Ticket saved = ticketRepository.save(ticket);
@@ -221,6 +225,10 @@ public class TicketService {
                 .toList();
         return new PageImpl<>(filtered,pageable, filtered.size());
 
+    }
+    private User getCurrentUser() {
+        return userRepository.findById(1L)
+                .orElseThrow(()->new RuntimeException("User not found"));
     }
 
 }
