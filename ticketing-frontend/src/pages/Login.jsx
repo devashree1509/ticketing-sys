@@ -1,4 +1,5 @@
 import React ,{useState} from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
@@ -6,10 +7,51 @@ function Login(){
 
     const[email,setEmail]=useState("");
     const[password,setPassword]=useState("");
+    const navigate= useNavigate();
+
+     const container = {
+                        height: "100vh",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#f3f4f6"
+                        };
+
+                    const card = {
+                        backgroundColor: "white",
+                        padding: "30px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        width: "300px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px"
+                        };
+
+                    const title = {
+                        textAlign: "center",
+                        color: "#2563eb",
+                        marginBottom: "10px"
+                        };
+
+                    const input = {
+                        padding: "10px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc"
+                        };
+
+                    const button = {
+                        backgroundColor: "#2563eb",
+                        color: "white",
+                        padding: "10px",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontWeight: "bold"
+                        };
 
     const handleLogin = async (e) => {
          e.preventDefault();
-
         try{
             const res=await axios.post("http://localhost:8080/api/auth/login",{
                 email,password});
@@ -24,7 +66,7 @@ function Login(){
                     role: res.data.role}));
 
                    alert("Login Successfully");
-                   window.location.href="/dashboard";
+                   navigate("/dashboard");
                 }else{
                      alert("Login failed");
                      }
@@ -36,23 +78,30 @@ function Login(){
                 };
 
             return(
-                <form onSubmit={(e)=>{
-                    e.preventDefault();
-                    handleLogin(e)}}>
+                <div style={container}>
+                 <div style={card}>
+                     <h2 style={title}>Login</h2>
+
                     <input
                     type="email"
-                    value={email}
                     placeholder="Enter Email"
-                    onChange={(e)=>setEmail(e.target.value)}/>
+                    value={email}
+                    onChange={(e)=>setEmail(e.target.value)}
+                    style={input}
+                    />
 
                     <input
                     type="password"
-                    value={password}
                     placeholder="Enter Password"
-                    onChange={(e)=>setPassword(e.target.value)}/>
+                    value={password}
+                    onChange={(e)=>setPassword(e.target.value)}
+                    style={input}/>
 
-                    <button type="submit">Login</button>
-                    </form>
-                    );
-                }
-    export default Login;
+                    <button style={button} onClick={handleLogin}>Login</button>
+
+                </div>
+            </div>
+);
+}
+
+export default Login;

@@ -17,10 +17,10 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtEncoder jwtEncoder;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+   private final AuthenticationManager authenticationManager;
+   private final JwtEncoder jwtEncoder;
+   private final UserRepository userRepository;
+   private final PasswordEncoder passwordEncoder;
 
     public AuthController(AuthenticationManager authenticationManager,JwtEncoder jwtEncoder,UserRepository userRepository,PasswordEncoder passwordEncoder){
         this.authenticationManager=authenticationManager;

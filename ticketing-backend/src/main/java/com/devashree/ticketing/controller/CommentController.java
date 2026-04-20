@@ -8,7 +8,9 @@ import com.devashree.ticketing.service.CommentService;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 
@@ -28,7 +30,10 @@ public class CommentController {
             @PathVariable Long ticketId,
             @RequestBody CreateCommentRequest request) {
 
-        Long currentUserId=1L;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+       Jwt jwt =(Jwt) auth.getPrincipal();
+        String email = jwt.getSubject();
+        Long currentUserId=commentService.getUserIdByEmail(email);
         return commentService.addComment(ticketId, request, currentUserId);
     }
 

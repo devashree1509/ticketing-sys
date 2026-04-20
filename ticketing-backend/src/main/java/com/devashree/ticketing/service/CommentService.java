@@ -23,6 +23,12 @@ public class CommentService {
 
     }
 
+    public Long getUserIdByEmail(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new RuntimeException("User not Found"));
+        return  user.getId();
+    }
+
     // POST comment
     public TicketComment addComment(Long ticketId, CreateCommentRequest request, Long currentUserId) {
 
@@ -40,6 +46,7 @@ public class CommentService {
 
         return commentRepository.save(comment);
     }
+
 
     // GET comments
     public List<TicketComment> getComments(Long ticketId) {

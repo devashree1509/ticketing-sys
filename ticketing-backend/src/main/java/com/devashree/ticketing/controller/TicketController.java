@@ -33,11 +33,19 @@ public class TicketController {
         );
     }
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/test")
     public String adminTest(){
         return "Admin access Granted";
+    }
+
+    @PutMapping("/{id}/assign")
+    public ResponseEntity<ApiResponse<Void>> assignTicket(
+            @PathVariable Long id,
+            @RequestParam Long agentId
+    ){
+        ticketService.assignTicket(id,agentId);
+        return ResponseEntity.ok(ApiResponse.success("Ticket assigned successfully:",null));
     }
 
 

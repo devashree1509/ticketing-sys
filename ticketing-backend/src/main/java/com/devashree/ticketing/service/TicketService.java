@@ -12,6 +12,7 @@ import com.devashree.ticketing.exception.NotFoundException;
 import com.devashree.ticketing.repository.TicketRepository;
 import com.devashree.ticketing.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,15 +74,15 @@ public class TicketService {
         );
     }
 
-    public void assignTicket(Long ticketId, Long userId) {
+    public void assignTicket(Long ticketId, Long agentId) {
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User agent = userRepository.findById(agentId)
+                .orElseThrow(() -> new RuntimeException("Agent not found"));
 
-        ticket.setAssignedTo(user);
+        ticket.setAssignedTo(agent);
 
         ticketRepository.save(ticket);
     }
@@ -205,7 +206,22 @@ public class TicketService {
 
         logger.info("Fetching all tickets");
 
-        Page<Ticket> ticketPage=ticketRepository.findAll(pageable);
+        Authentication auth=SecurityContextHolder.getContext().getAuthentication();
+        String role=auth.getAuthorities().iterator().next().getAuthority();
+
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        String email = jwt.getSubject();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new RuntimeException("User not found"));
+
+        Page<Ticket> ticketPage;
+
+        if(role.equals("ROLE_CUSTOMER")){
+            ticketPage = ticketRepository.findByCreatedBy(user,pageable);
+        }else {
+            ticketPage = ticketRepository.findAll(pageable);
+        }
 
         List<TicketResponse> filtered= ticketPage.getContent().stream()
                 .filter(t -> status == null || t.getStatus().name().equalsIgnoreCase(status))
@@ -227,7 +243,11 @@ public class TicketService {
 
     }
     private User getCurrentUser() {
-        return userRepository.findById(1L)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        String email= jwt.getSubject();
+        System.out.println("JWT subject:"+email);
+        return userRepository.findByEmail(email)
                 .orElseThrow(()->new RuntimeException("User not found"));
     }
 

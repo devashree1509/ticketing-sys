@@ -99,6 +99,7 @@ public class SecurityConfig {
         if(role==null) return List.of();
         return List.of(new SimpleGrantedAuthority("ROLE_"+role));
         });
+        converter.setPrincipalClaimName("email");
         return converter;
     }
 

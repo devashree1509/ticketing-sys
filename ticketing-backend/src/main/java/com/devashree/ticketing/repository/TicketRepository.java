@@ -2,6 +2,7 @@ package com.devashree.ticketing.repository;
 
 import com.devashree.ticketing.entity.Ticket;
 import com.devashree.ticketing.entity.TicketStatus;
+import com.devashree.ticketing.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,7 @@ public interface  TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByStatus(TicketStatus status);
     List<Ticket> findByPriority(String priority);
     List<Ticket> findByTitleContainingIgnoreCase(String keyword);
+    Page<Ticket> findByCreatedBy(User user, Pageable pageable);
 
 }
 
